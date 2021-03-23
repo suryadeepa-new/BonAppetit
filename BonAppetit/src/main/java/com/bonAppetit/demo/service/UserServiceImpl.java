@@ -1,15 +1,17 @@
 package com.bonAppetit.demo.service;
 
 import java.util.HashSet;
+
 import java.util.List;
 import java.util.Set;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import org.springframework.stereotype.Service;
 
 import com.bonAppetit.demo.bean.Response;
@@ -18,9 +20,14 @@ import com.bonAppetit.demo.bean.User;
 import com.bonAppetit.demo.bean.UserDto;
 import com.bonAppetit.demo.dao.UserDAO;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+
 @Service(value="userService")
 public class UserServiceImpl implements UserDetailsService, UserService{
-	
+	LoggerContext context = new LoggerContext();
+	Logger logger = context.getLogger("logging");
+
 
 
 	    @Autowired
@@ -28,10 +35,12 @@ public class UserServiceImpl implements UserDetailsService, UserService{
 
 	    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 	        User user = userDao.findByUsername(username);
+	        logger.info("loading user: "+user.getUsername());
 	        if(user == null){
 	            throw new UsernameNotFoundException("Invalid username or password.");
 	        }
 	        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), getAuthority(user));
+	        
 	    }
 
 	    private Set<SimpleGrantedAuthority> getAuthority(User user) {

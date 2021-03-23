@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.bonAppetit.demo.bean.Authority;
 import com.bonAppetit.demo.bean.Response;
 import com.bonAppetit.demo.bean.Restaurant;
 import com.bonAppetit.demo.bean.User;
@@ -25,11 +26,12 @@ public class UserDAOImpl implements UserDAO{
     
 
 	public User findByUsername(String username){
+		User userInfo = null;
     	String sql = "SELECT u.username AS name, u.password AS pass, a.authority AS role FROM "+
     			     "[DEMO].[dbo].[User] u INNER JOIN [DEMO].[dbo].[Authority] a on u.username=a.username WHERE "+
     			     "u.enabled =1 and u.username =:userName";
-    
-    	User userInfo = namedjdbcTemplate.queryForObject(sql,
+    try {
+    	userInfo = namedjdbcTemplate.queryForObject(sql,
     			new MapSqlParameterSource("userName", username),
     			new RowMapper<User>() {
             public User mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -41,6 +43,9 @@ public class UserDAOImpl implements UserDAO{
             } 
     	}
     	);
+    }catch(Exception e) {
+    	e.printStackTrace();
+    }
     	
     	return userInfo;
     }
@@ -53,9 +58,16 @@ public class UserDAOImpl implements UserDAO{
 
 	@Override
 	public Response saveOwner(User owner, Restaurant outlet) {
+		owner.setPassword("{noop}"+owner.getPassword());
+		Authority auth = new Authority();
+		auth.setUsername(owner.getUsername());
+		auth.setAuthority("RESTAURANT_OWNER");
 	    int success = namedjdbcTemplate.update(
                 "insert into [DEMO].[dbo].[User](username,password,enabled,mobileNo,emailId) values(:username,:password,:enabled,:mobileNo,:emailId) ",
                 new BeanPropertySqlParameterSource(owner));
+	    int result = namedjdbcTemplate.update(
+                "insert into [DEMO].[dbo].[Authority](username,authority) values(:username,:authority) ",
+                new BeanPropertySqlParameterSource(auth));
 	    int restaurantId = namedjdbcTemplate.update(
                 "insert into [DEMO].[dbo].[Restaurant](name,location,price_for_two) values(:name,:location,:priceForTwo)",
                 new BeanPropertySqlParameterSource(outlet));
@@ -67,7 +79,7 @@ public class UserDAOImpl implements UserDAO{
 	    obj.setRestaurantId(restaurantId);
 	    obj.setUserId(userId);
 	    obj.setRoleId(owner.getRoleId());
-		return null;
+		return obj;
 	    
     }
 		
@@ -75,10 +87,16 @@ public class UserDAOImpl implements UserDAO{
 
 	@Override
 	public Response save(User commonUser) {
-		
+		commonUser.setPassword("{noop}"+commonUser.getPassword());
+		Authority auth = new Authority();
+		auth.setUsername(commonUser.getUsername());
+		auth.setAuthority("CUSTOMER");
 	    int success = namedjdbcTemplate.update(
                 "insert into [DEMO].[dbo].[User](username,password,enabled,mobileNo,emailId) values(:username,:password,:enabled,:mobileNo,:emailId) ",
                 new BeanPropertySqlParameterSource(commonUser));
+	    int result = namedjdbcTemplate.update(
+                "insert into [DEMO].[dbo].[Authority](username,authority) values(:username,:authority) ",
+                new BeanPropertySqlParameterSource(auth));
 	    int userId =  (int) namedjdbcTemplate.queryForObject(
                 "select user_id from [DEMO].[dbo].[User] where username = :username",
                 new MapSqlParameterSource("username", commonUser.getUsername()),
