@@ -20,8 +20,6 @@ import com.bonAppetit.demo.bean.User;
 import com.bonAppetit.demo.bean.UserDto;
 import com.bonAppetit.demo.dao.UserDAO;
 
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
 
 @Service(value="userService")
 public class UserServiceImpl implements UserDetailsService, UserService{

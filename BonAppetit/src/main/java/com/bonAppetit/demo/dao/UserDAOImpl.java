@@ -79,6 +79,7 @@ public class UserDAOImpl implements UserDAO{
 	    obj.setRestaurantId(restaurantId);
 	    obj.setUserId(userId);
 	    obj.setRoleId(owner.getRoleId());
+	    obj.setAuthority("RESTAURANT_OWNER");
 		return obj;
 	    
     }
@@ -104,6 +105,7 @@ public class UserDAOImpl implements UserDAO{
 	    Response resp = new Response();
 	    resp.setUserId(userId);
 	    resp.setRoleId(commonUser.getRoleId());
+	    resp.setAuthority("CUSTOMER");
 	    return resp;
 	    
 	}

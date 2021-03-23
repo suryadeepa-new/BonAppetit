@@ -5,7 +5,7 @@ public class Response {
 	private int userId;
 	private int restaurantId;
 	private int roleId;
-	
+	private String authority;
 	
 	public int getUserId() {
 		return userId;
@@ -25,6 +25,14 @@ public class Response {
 	public void setRoleId(int roleId) {
 		this.roleId = roleId;
 	}
+	public String getAuthority() {
+		return authority;
+	}
+	public void setAuthority(String authority) {
+		this.authority = authority;
+	}
 	
 
+	
+	
 }
