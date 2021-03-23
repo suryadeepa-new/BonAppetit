@@ -25,8 +25,7 @@ import ch.qos.logback.classic.LoggerContext;
 
 @Service(value="userService")
 public class UserServiceImpl implements UserDetailsService, UserService{
-	LoggerContext context = new LoggerContext();
-	Logger logger = context.getLogger("logging");
+
 
 
 
@@ -35,7 +34,7 @@ public class UserServiceImpl implements UserDetailsService, UserService{
 
 	    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 	        User user = userDao.findByUsername(username);
-	        logger.info("loading user: "+user.getUsername());
+	     
 	        if(user == null){
 	            throw new UsernameNotFoundException("Invalid username or password.");
 	        }
